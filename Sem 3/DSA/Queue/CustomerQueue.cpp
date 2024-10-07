@@ -9,26 +9,13 @@ class Customer
     long long contact;
 
 public:
-    void read()
-    {
-        cout << "Enter the details of the customer: " << endl;
-        cout << "Customer Name: ";
-        cin >> name;
-        cout << "Customer Contact Number: ";
-        cin >> contact;
-    }
+    void read();
 
-    void Display()
-    {
-        cout << "Customer Name: " << name << endl
-             << "Customer Contact Number: " << contact << endl;
-    }
+    void Display();
 
-    string ShowName()
-    {
-        return name;
-    }
+    string ShowName();
 };
+
 
 class Queue
 {
@@ -41,13 +28,34 @@ public:
         front = -1;
         rear = -1;
     }
-    void Insert(); // Add Customer to the queue
-    void Delete(); // Remove Customer from the queue
+    void Insert();  // Add Customer to the queue
+    void Delete();  // Remove Customer from the queue
     void display(); // Display the customer queue
     bool isEmpty(); // Check if queue is empty
-    bool isFull(); // Check if queue is full
+    bool isFull();  // Check if queue is full
 };
 
+//function definations for class customer
+void Customer::Display()
+{
+    cout << "Customer Name: " << name << endl
+         << "Customer Contact Number: " << contact << endl;
+}
+
+void Customer::read()
+{
+    cout << "Enter the details of the customer: " << endl;
+    cout << "Customer Name: ";
+    cin >> name;
+    cout << "Customer Contact Number: ";
+    cin >> contact;
+}
+string Customer::ShowName()
+{
+    return name;
+}
+
+//function definations for class Queue
 bool Queue::isEmpty()
 {
     return (front == -1 || front > rear);
