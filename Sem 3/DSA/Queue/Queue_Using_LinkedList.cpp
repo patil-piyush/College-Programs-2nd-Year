@@ -16,10 +16,10 @@ public:
     string ShowName();
 };
 
-class CustomeList{
+class CustomerList{
     public:
     Customer *head;
-    CustomeList();
+    CustomerList();
     void InsertCustomer();
     void ServeCustomer();
     void Display();
@@ -32,7 +32,7 @@ Customer::Customer()
 {
     name = "null";
     contact = 0;
-    next = NULL;
+    next = nullptr;
 }
 
 void Customer::Display()
@@ -53,4 +53,22 @@ void Customer::read()
 string Customer::ShowName()
 {
     return name;
+}
+
+//function Definition for CustomerList class
+
+CustomerList::CustomerList(){
+    head = nullptr;
+}
+
+bool CustomerList::isFull(){
+     
+}
+
+bool CustomerList::isEmpty (){
+     
+}
+
+void CustomerList::InsertCustomer(){
+     
 }
