@@ -11,6 +11,7 @@ private:
 public:
     void read();
     void display();
+    int showRoll();
     friend void insertionSort(Student s[], int n);
     friend void shellSort(Student s[], int n);
     friend void mergeSort(Student s[], int low, int high);
@@ -28,6 +29,10 @@ void Student::read()
     cout << "-------------------------------------------------" << endl;
 }
 
+//function for returning roll no
+int Student::showRoll(){
+    return roll;
+}
 // Function to display student data
 void Student::display()
 {
@@ -82,7 +87,7 @@ void merge(Student s[], int low, int mid, int high)
 
     while (i <= mid && j <= high)
     {
-        if (s[i].roll < s[j].roll)
+        if (s[i].showRoll() < s[j].showRoll())
         {
             temp[k++] = s[i++];
         }
