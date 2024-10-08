@@ -3,13 +3,18 @@ using namespace std;
 
 class Employee
 {
-public:
+    private:
     int empID;
     string empName;
     float empSalary;
+    public:
     void getData();
     void showData();
     friend void mergeSort(Employee arr[], int start, int end);
+    friend void QuickSort(Employee arr[], int low, int high);
+    friend void merge(Employee arr[], int start, int mid, int end);
+    friend int Partition(Employee arr[], int low, int high);
+
 };
 
 void Employee::getData()
