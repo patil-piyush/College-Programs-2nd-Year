@@ -17,13 +17,13 @@ public:
 };
 
 
-class Queue
+class CircularQueue
 {
     Customer arr[SIZE]; // Array to store customer names
     int front, rear;
 
 public:
-    Queue()
+    CircularQueue()
     {
         front = -1;
         rear = -1;
@@ -56,17 +56,17 @@ string Customer::ShowName()
 }
 
 //function definations for class Queue
-bool Queue::isEmpty()
+bool CircularQueue::isEmpty()
 {
     return (front == -1 || front > rear);
 }
 
-bool Queue::isFull()
+bool CircularQueue::isFull()
 {
     return (rear == SIZE - 1);
 }
 
-void Queue::Insert()
+void CircularQueue::Insert()
 {
     if (isFull())
     {
@@ -83,7 +83,7 @@ void Queue::Insert()
     }
 }
 
-void Queue::Delete()
+void CircularQueue::Delete()
 {
     if (isEmpty())
     {
@@ -97,7 +97,7 @@ void Queue::Delete()
     }
 }
 
-void Queue::display()
+void CircularQueue::display()
 {
     if (isEmpty())
     {
@@ -117,7 +117,7 @@ void Queue::display()
 
 int main()
 {
-    Queue q;
+    CircularQueue q;
     int choice;
 
     do
