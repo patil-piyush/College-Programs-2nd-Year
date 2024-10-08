@@ -6,7 +6,7 @@ class song{
     string title, singer;
     public:
     song *next;
-    song{
+    song(){
         next = NULL;
     }
     
