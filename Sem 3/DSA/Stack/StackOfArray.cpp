@@ -23,7 +23,8 @@ class stack{
             cout<<"stack is empty\n";
         }
     }
-}
+};
+
 int main(){
     
     return 0;
