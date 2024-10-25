@@ -27,7 +27,7 @@ public:
     }
     void display()
     {
-        cout << "Id: " << empId << " , " << "Name: " << name << " , " << "Salary: " << salary << endl;
+        cout << empId << "\t" << name << "\t" << salary << endl;
     }
     int getId()
     {
@@ -45,12 +45,15 @@ public:
     {
         for (int i = 0; i < SIZE; i++)
         {
-            flag[i] = 0; 
+            flag[i] = 0;
         }
     }
-    int isFull(){
-        for(int i=0;i<SIZE;i++){
-            if(flag[i]==0){
+    int isFull()
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            if (flag[i] == 0)
+            {
                 return 0;
             }
         }
@@ -59,8 +62,9 @@ public:
     void Insert()
     {
 
-        if(isFull()){
-            cout<<"Hashtable is full!!\n\n";
+        if (isFull())
+        {
+            cout << "Hashtable is full!!\n\n";
             return;
         }
         employee newr;
@@ -83,40 +87,44 @@ public:
                     e[pos] = newr;
                     return;
                 }
-            }            
+            }
         }
     }
 
-    void Display()
-    {   
-        cout<<endl<<endl;
+    // Function to display all employees in the hash table
+    void DisplayTable()
+    {
+        cout << "Position\tID\tName\tSalary" << endl;
         for (int i = 0; i < SIZE; i++)
         {
-            if (flag[i] == 0)
-            {
-                cout << "--------------Empty----------------" << endl;
+            cout << i << "\t\t";
+            if (flag[i] == 1)
+            { // Slot is occupied
+                e[i].display();
             }
             else
             {
-                e[i].display();
+                cout << "-\t-\t-" << endl; // Display '-' for empty slots
             }
         }
     }
 
-    void Delete(){
+    void Delete()
+    {
         int id;
-        cout<<"Enter the employee id to delete: ";
-        cin>>id;
+        cout << "Enter the employee id to delete: ";
+        cin >> id;
         int pos = id % SIZE;
-        for(int i=0; i<SIZE;i++){
+        for (int i = 0; i < SIZE; i++)
+        {
             if (flag[pos] == 1)
             {
                 flag[pos]--;
-                cout<<"Element Deleted Succesfully"<<endl;
+                cout << "Element Deleted Succesfully" << endl;
                 return;
             }
         }
-        cout<<"Element not found"<<endl;
+        cout << "Element not found" << endl;
     }
 };
 
@@ -125,7 +133,7 @@ int main()
     Hashtable ht;
     int choice;
 
-    while(1)
+    while (1)
     {
         cout << "\nMenu:\n";
         cout << "1. Insert Employee\n";
@@ -141,7 +149,7 @@ int main()
             ht.Insert();
             break;
         case 2:
-            ht.Display();
+            ht.DisplayTable();
             break;
         case 3:
             ht.Delete();
