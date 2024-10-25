@@ -5,7 +5,7 @@ class Node
 {
     string jobName;
     int priority;
-    string time;
+    string shift;
 
 public:
     Node *prev;
@@ -33,7 +33,7 @@ Node::Node()
 {
     jobName = "NA";
     priority = 0;
-    time = "NA";
+    shift = "NA";
     prev = next = nullptr;
 }
 
@@ -41,13 +41,13 @@ Node::Node(string j, int p, string t)
 {
     jobName = j;
     priority = p;
-    time = t;
+    shift = t;
     prev = next = nullptr;
 }
 
 void Node::display()
 {
-    cout << "Job Name: " << jobName << ", Priority: " << priority << ", Time: " << time << endl;
+    cout << "Job Name: " << jobName << ", Priority: " << priority << ", shift: " << shift << endl;
 }
 
 int Node::showPriority()
@@ -158,7 +158,7 @@ int main()
 {
     doubleQueue dq;
     int choice;
-    string jobname, time;
+    string jobname, shift;
     int priority;
 
     while (1)
@@ -179,9 +179,9 @@ int main()
             cout << "Enter priority of the job: ";
             cin >> priority;
             cout << "Enter the shift (Day/Night): ";
-            cin >> time;
+            cin >> shift;
 
-            Node nn(jobname, priority, time);
+            Node nn(jobname, priority, shift);
 
             // Check if the queue is empty or compare with front node priority
             if (dq.f == nullptr || priority > dq.f->showPriority())
