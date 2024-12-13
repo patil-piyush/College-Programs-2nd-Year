@@ -28,7 +28,7 @@ def find_highest_score():
     """find the student with the highest score"""
     if not student_scores:
         print("no student in the record")
-        return none;
+        return None
     
     highest_score_student = max(student_scores, key = student_scores.get)
     highest_score = student_scores[highest_score_student]
