@@ -52,7 +52,9 @@ int isEmpty(struct Queue q)
 {
     return q.front == q.rear;
 }
+//end of queue
 
+//create function for tree creation
 void create(){
     struct Queue q;
     create(&q, 100);
@@ -88,44 +90,58 @@ void create(){
     }
 }
 
-void preorder(struct Node *p){
+//Recurssive traversals
+void Preorder(struct Node *p){
     if(p!=NULL){
         cout<<p->data<<" ";
-        preorder(p->lchild);
-        preorder(p->rchild);
+        Preorder(p->lchild);
+        Preorder(p->rchild);
     }
     return;
 }
 
-void inorder(struct Node *p){
+void Inorder(struct Node *p){
     if(p!=NULL){
-        inorder(p->lchild);
+        Inorder(p->lchild);
         cout<<p->data<<" ";
-        inorder(p->rchild);
+        Inorder(p->rchild);
+    }
+    return;
+}
+
+void Postorder(struct Node *p){
+    if(p!=NULL){
+        Postorder(p->lchild);
+        Postorder(p->rchild);
+        cout<<p->data<<" ";
     }
     return;
 }
 
 
-void postorder(struct Node *p){
-    if(p!=NULL){
-        postorder(p->lchild);
-        postorder(p->rchild);
-        cout<<p->data<<" ";
-    }
-    return;
+//Iterative traversals
+void IPreorder(struct Node *p){
+    
+}
+
+void IInorder(struct Node *p){
+    
+}
+
+void IPostorder(struct Node *p){
+    
 }
 
 int main(){
     create();
     cout<<"Preorder: ";
-    preorder(root);
+    Preorder(root);
     cout<<endl;
     cout<<"Inorder: ";
-    inorder(root);
+    Inorder(root);
     cout<<endl;
     cout<<"Postorder: ";
-    postorder(root);
+    Postorder(root);
     cout<<endl;
     return 0;
 }
