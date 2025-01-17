@@ -1,14 +1,15 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-//structure for Node
-struct Node{
+// structure for Node
+struct Node
+{
     struct Node *lchild;
     int data;
     struct Node *rchild;
-}*root;
+} *root;
 
-//queue
+// queue
 struct Queue
 {
     int size;
@@ -52,15 +53,17 @@ int isEmpty(struct Queue q)
 {
     return q.front == q.rear;
 }
-//end of queue
+// end of queue
 
-//Insert function for inserting an element in a BST by level order traversal
-void InsertLevelOrder(Node *t, int key){
-    struct Node *p,*r = NULL;
+// Insert function for inserting an element in a BST by level order traversal
+void InsertLevelOrder(Node *t, int key)
+{
+    struct Node *p, *r = NULL;
     Queue q;
-    create(&q,100);
-    //if root is not present
-    if(t==NULL){
+    create(&q, 100);
+    // if root is not present
+    if (t == NULL)
+    {
         p = new Node;
         p->data = key;
         p->lchild = p->rchild = NULL;
@@ -68,13 +71,16 @@ void InsertLevelOrder(Node *t, int key){
         return;
     }
 
-    enqueue(&q,t);
-    while (!isEmpty(q)) {
+    enqueue(&q, t);
+    while (!isEmpty(q))
+    {
         r = dequeue(&q);
-        if(r->lchild != NULL){
-            enqueue(&q,r->lchild);
+        if (r->lchild != NULL)
+        {
+            enqueue(&q, r->lchild);
         }
-        else{
+        else
+        {
             p = new Node;
             p->data = key;
             p->lchild = p->rchild = NULL;
@@ -82,10 +88,12 @@ void InsertLevelOrder(Node *t, int key){
             return;
         }
 
-        if(r->rchild != NULL){
-            enqueue(&q,r->rchild);
+        if (r->rchild != NULL)
+        {
+            enqueue(&q, r->rchild);
         }
-        else{
+        else
+        {
             p = new Node;
             p->data = key;
             p->rchild = p->rchild = NULL;
@@ -93,125 +101,161 @@ void InsertLevelOrder(Node *t, int key){
             return;
         }
     }
-    
 }
 
-//Insert function for inserting an element in a BST
-void Insert(Node *t, int key){
+// Insert function for inserting an element in a BST
+void Insert(Node *t, int key)
+{
     struct Node *r = NULL, *p;
-    while (t != NULL) {
+    if (t == NULL)
+    {
+        t = new Node;
+        t->data = key;
+        t->lchild = t->rchild = NULL;
+        return;
+    }
+
+    while (t != NULL)
+    {
         r = t;
-        if (key == t->data) return; 
-        else if (key < t->data) t = t->lchild;
-        else t = t->rchild;
+        if (key == t->data)
+            return;
+        else if (key < t->data)
+            t = t->lchild;
+        else
+            t = t->rchild;
     }
     p = new Node;
     p->data = key;
     p->lchild = p->rchild = NULL;
-    if (key < r->data) r->lchild = p;
-    else r->rchild = p;
+    if (key < r->data)
+        r->lchild = p;
+    else
+        r->rchild = p;
 }
 
-
-//function to create a binary tree from inorder traversal
-void createInorder(Node *t){
-    int n,ele;
-    cout<<"Enter the number of nodes you want to create: ";
-    cin>>n;
+// function to create a binary tree from inorder traversal
+void createInorder()
+{
+    int n, ele;
+    cout << "Enter the number of nodes you want to create: ";
+    cin >> n;
     int Ino[n];
-    for(int i = 0; i<n; i++){
-        cout<<"Enter the "<<i+1<<"th element: ";
-        cin>>Ino[i];
+    cout << "\n(Elements must be sorted)\n";
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Enter the " << i + 1 << "th element: ";
+        cin >> Ino[i];
     }
-    struct Node *p = new Node;
-    p->data = Ino[n/2];
-    
+    root = new Node;
+    root->data = Ino[n / 2];
+    root->lchild = root->rchild = NULL;
+    for (int i = n / 2; i >= 0; --i)
+    {
+        Insert(root, Ino[i]);
+    }
+    for (int j = n / 2; j < n; ++j)
+    {
+        Insert(root, Ino[j]);
+    }
 }
 
-//create function for tree creation
-void create(){
+// create function for tree creation
+void create()
+{
     int x;
     struct Node *p;
-    cout<<"enter the data for root node: ";
-    cin>>x;
+    cout << "enter the data for root node: ";
+    cin >> x;
     root = new Node;
     root->data = x;
     root->rchild = root->lchild = NULL;
-    cout<<"Enter the number of nodes you want to add: ";
+    cout << "Enter the number of nodes you want to add: ";
     int n;
-    cin>>n;
+    cin >> n;
     for (int i = 0; i < n; i++)
     {
-        cout<<"Enter the "<<i+1<<"th element to be inserted: ";
-        cin>>x;
+        cout << "Enter the " << i + 1 << "th element to be inserted: ";
+        cin >> x;
         Insert(root, x);
     }
 }
 
-//Recurssive traversals
-void Preorder(struct Node *p){
-    if(p!=NULL){
-        cout<<p->data<<" ";
+// Recurssive traversals
+void Preorder(struct Node *p)
+{
+    if (p != NULL)
+    {
+        cout << p->data << " ";
         Preorder(p->lchild);
         Preorder(p->rchild);
     }
     return;
 }
 
-void Inorder(struct Node *p){
-    if(p!=NULL){
+void Inorder(struct Node *p)
+{
+    if (p != NULL)
+    {
         Inorder(p->lchild);
-        cout<<p->data<<" ";
+        cout << p->data << " ";
         Inorder(p->rchild);
     }
     return;
 }
 
-void Postorder(struct Node *p){
-    if(p!=NULL){
+void Postorder(struct Node *p)
+{
+    if (p != NULL)
+    {
         Postorder(p->lchild);
         Postorder(p->rchild);
-        cout<<p->data<<" ";
+        cout << p->data << " ";
     }
     return;
 }
 
-//function for counting the total Nodes
-int Count(struct Node *p){
-    if(p!=NULL){
+// function for counting the total Nodes
+int Count(struct Node *p)
+{
+    if (p != NULL)
+    {
         int x = Count(p->lchild);
         int y = Count(p->rchild);
-        return x+y+1;
+        return x + y + 1;
     }
     return 0;
 }
 
-//function for counting the leaf Nodes
-int CountLeaf(struct Node *p){
-    if(p!=NULL){
+// function for counting the leaf Nodes
+int CountLeaf(struct Node *p)
+{
+    if (p != NULL)
+    {
         int x = CountLeaf(p->lchild);
         int y = CountLeaf(p->rchild);
-        if(p->lchild == NULL && p->rchild == NULL)
-            return x+y+1;
+        if (p->lchild == NULL && p->rchild == NULL)
+            return x + y + 1;
         else
-            return x+y;
+            return x + y;
     }
     return 0;
 }
 
-int main(){
+int main()
+{
     createInorder();
-    // cout<<"Preorder: ";
-    // Preorder(root);
-    // cout<<endl;
+    cout << "Preorder: ";
+    Preorder(root);
+    cout << endl;
     // int key;
     // cout<<"Enter the key that you wamt to insert by level order: ";
     // cin>>key;
     // InsertLevelOrder(root,key);
 
-    cout<<"Inorder: ";
-    Inorder(root);
-    cout<<endl;
+    // cout << "Inorder: ";
+    // Inorder(root);
+    // cout << endl;
     // cout<<"Postorder: ";
     // Postorder(root);
     // cout<<endl;
