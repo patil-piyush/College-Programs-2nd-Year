@@ -145,11 +145,15 @@ WHERE city = "New York" OR city = "Los Angeles" OR city = "Chicago";
 SELECT * FROM Products_220
 WHERE category != "Electronics" OR category != "Fashion";
 
+SELECT * FROM Orders_220
+WHERE customer_id = 1 OR customer_id = 3 OR customer_id = 5;
+
+SELECT * FROM Customers_220
+WHERE customer_id NOT IN (SELECT DISTINCT customer_id FROM Orders_220);
 
 
+SELECT * FROM Orders_220
+WHERE order_date >= CURDATE() - INTERVAL 30 DAY;
 
-
-
-
-
-
+SELECT * FROM Orders_220
+WHERE total_amount % 100 = 0;
