@@ -89,6 +89,7 @@ INSERT INTO Accounts (customer_id, balance, account_type, branch_id) VALUES
 (9, 500.00, 'Checking', 1);
 
 
+
 INSERT INTO Transactions (account_id, amount, transaction_type, transaction_date) VALUES
 (1, 1000.00, 'Deposit', '2024-01-15'),
 (2, 2000.00, 'Withdrawal', '2024-01-16'),
@@ -124,6 +125,70 @@ SELECT * FROM Accounts;
 SELECT * FROM Transactions;
 SELECT * FROM Loans;
 
+SELECT account_type, SUM(balance) AS total_balance
+FROM Accounts
+GROUP BY account_type;
+
+SELECT branch_id, COUNT(*) AS num_accounts
+FROM Accounts
+GROUP BY branch_id;
 
 
+SELECT city, COUNT(*) AS num_customers
+FROM Customers
+GROUP BY city;
 
+SELECT loan_type, COUNT(*) AS approved_loans
+FROM Loans
+WHERE status = 'Approved'
+GROUP BY loan_type;
+
+SELECT transaction_type, COUNT(*) AS num_transactions
+FROM Transactions
+GROUP BY transaction_type;
+  
+  
+SELECT name 
+FROM Customers 
+WHERE customer_id NOT IN (SELECT customer_id FROM Loans);
+
+
+SELECT customer_id 
+FROM Accounts 
+GROUP BY customer_id 
+HAVING COUNT(DISTINCT branch_id) > 1;
+
+SELECT account_id 
+FROM Accounts 
+WHERE account_id NOT IN (
+    SELECT DISTINCT account_id 
+    FROM Transactions 
+    WHERE transaction_type = 'Deposit' 
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+);
+
+SELECT account_type 
+FROM Accounts 
+GROUP BY account_type 
+HAVING SUM(balance) < 25000;
+
+SELECT account_type, SUM(balance) AS total_balance
+FROM Accounts
+GROUP BY account_type
+HAVING total_balance > 50000;
+
+SELECT transaction_date, COUNT(*) AS transaction_count
+FROM Transactions
+GROUP BY transaction_date
+HAVING transaction_count > 5;
+
+SELECT transaction_date, SUM(amount) AS total_transaction_amount
+FROM Transactions
+GROUP BY transaction_date
+ORDER BY total_transaction_amount DESC
+LIMIT 3;
+
+SELECT name 
+FROM Customers 
+WHERE customer_id IN (SELECT customer_id FROM Loans) 
+AND customer_id NOT IN (SELECT customer_id FROM Accounts);
