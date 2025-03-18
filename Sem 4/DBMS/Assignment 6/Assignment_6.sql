@@ -120,3 +120,124 @@ FROM Products
 GROUP BY category;
 
 
+SELECT Orders.order_id, Customers.name, Orders.total_amount
+FROM Orders
+JOIN Customers ON Orders.customer_id = Customers.customer_id
+WHERE Orders.order_date >= CURDATE() - INTERVAL 30 DAY;
+
+
+SELECT Sellers.seller_name
+FROM Sellers
+JOIN Product_Sellers ON Sellers.seller_id = Product_Sellers.seller_id
+JOIN Products ON Product_Sellers.product_id = Products.product_id
+WHERE Products.product_name = 'Laptop';
+
+
+SELECT Customers.customer_id, Customers.name
+FROM Customers
+LEFT JOIN Orders ON Customers.customer_id = Orders.customer_id
+WHERE Orders.order_id IS NULL;
+
+SELECT *
+FROM Orders
+WHERE total_amount > (SELECT AVG(total_amount) FROM Orders);
+
+SELECT customer_id, COUNT(order_id) AS total_orders
+FROM Orders
+GROUP BY customer_id
+HAVING COUNT(order_id) >= 2;
+
+SELECT Products.product_name, SUM(Order_Items.quantity) AS total_quantity
+FROM Order_Items
+JOIN Products ON Order_Items.product_id = Products.product_id
+GROUP BY Products.product_name
+ORDER BY total_quantity DESC
+LIMIT 3;
+
+SELECT Products.product_name
+FROM Product_Sellers
+JOIN Products ON Product_Sellers.product_id = Products.product_id
+GROUP BY Products.product_name
+HAVING COUNT(DISTINCT Product_Sellers.seller_id) > 1;
+
+SELECT Sellers.seller_id, Sellers.seller_name
+FROM Sellers
+LEFT JOIN Product_Sellers ON Sellers.seller_id = Product_Sellers.seller_id
+WHERE Product_Sellers.product_id IS NULL;
+
+
+SELECT Products.product_id, Products.product_name
+FROM Products
+LEFT JOIN Order_Items ON Products.product_id = Order_Items.product_id
+WHERE Order_Items.order_item_id IS NULL;
+
+SELECT Customers.name, COUNT(Orders.order_id) AS total_orders
+FROM Customers
+JOIN Orders ON Customers.customer_id = Orders.customer_id
+GROUP BY Customers.name
+ORDER BY total_orders DESC
+LIMIT 1;
+
+SELECT Orders.customer_id, Customers.name, COUNT(DISTINCT Order_Items.product_id) AS product_count
+FROM Orders
+JOIN Order_Items ON Orders.order_id = Order_Items.order_id
+JOIN Customers ON Orders.customer_id = Customers.customer_id
+GROUP BY Orders.customer_id, Customers.name
+HAVING COUNT(DISTINCT Order_Items.product_id) > 5;
+
+SELECT Products.product_id, Products.product_name
+FROM Products
+JOIN Product_Sellers ON Products.product_id = Product_Sellers.product_id
+GROUP BY Products.product_id, Products.product_name
+HAVING COUNT(DISTINCT Product_Sellers.seller_id) > 1
+AND NOT EXISTS (
+    SELECT 1 
+    FROM Order_Items
+    WHERE Order_Items.product_id = Products.product_id
+);
+
+SELECT Customers.customer_id, Customers.name, SUM(Orders.total_amount) AS total_spent
+FROM Customers
+JOIN Orders ON Customers.customer_id = Orders.customer_id
+GROUP BY Customers.customer_id, Customers.name
+ORDER BY total_spent DESC
+LIMIT 1;
+
+
+SELECT customer_id, name
+FROM Customers
+WHERE customer_id IN (SELECT customer_id FROM Orders)
+UNION
+SELECT customer_id, name
+FROM Customers
+WHERE city IN (SELECT city FROM Sellers);
+
+SELECT product_id, product_name
+FROM Products
+WHERE product_id IN (SELECT product_id FROM Product_Sellers)
+UNION
+SELECT product_id, product_name
+FROM Products
+WHERE product_id IN (SELECT product_id FROM Order_Items);
+
+SELECT product_id, product_name
+FROM Products
+WHERE product_id IN (SELECT product_id FROM Order_Items)
+AND product_id IN (SELECT product_id FROM Product_Sellers);
+
+SELECT customer_id, name
+FROM Customers
+WHERE customer_id IN (SELECT customer_id FROM Orders)
+AND city IN (SELECT city FROM Sellers);
+
+SELECT Customers.customer_id, Customers.name
+FROM Customers
+WHERE NOT EXISTS (
+    SELECT DISTINCT YEAR(Orders.order_date)
+    FROM Orders
+    WHERE NOT EXISTS (
+        SELECT 1 FROM Orders
+        WHERE Orders.customer_id = Customers.customer_id
+        AND YEAR(Orders.order_date) = YEAR(Orders.order_date)
+    )
+);
