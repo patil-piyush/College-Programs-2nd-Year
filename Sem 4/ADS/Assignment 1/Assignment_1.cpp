@@ -1,138 +1,313 @@
 #include <iostream>
-#include <queue>
+#include <string>
 using namespace std;
 
-struct TreeNode {
+class Node
+{
+public:
     string key, value;
-    TreeNode *left, *right;
-    TreeNode(string k, string v) : key(k), value(v), left(nullptr), right(nullptr) {}
+    int height; // Track height of the node
+    Node *left;
+    Node *right;
+
+    Node(string k, string v)
+    {
+        key = k;
+        value = v;
+        height = 1; // New nodes start with height 1
+        left = right = nullptr;
+    }
 };
 
-class DictionaryBST {
+class Dictionary
+{
 private:
-    TreeNode* root;
-    
-    TreeNode* insert(TreeNode* node, string key, string value) {
-        if (!node) return new TreeNode(key, value);
-        if (key < node->key) node->left = insert(node->left, key, value);
-        else if (key > node->key) node->right = insert(node->right, key, value);
-        else node->value = value;
+    Node *root;
+
+    // Get the height of a node
+    int getHeight(Node *node)
+    {
+        return (node == nullptr) ? 0 : node->height;
+    }
+
+    // Insert a word into the dictionary
+    Node *insert(Node *node, string key, string value)
+    {
+        if (node == nullptr)
+            return new Node(key, value);
+
+        if (key < node->key)
+            node->left = insert(node->left, key, value);
+        else if (key > node->key)
+            node->right = insert(node->right, key, value);
+        else
+        {
+            node->value = value; // Update meaning if word already exists
+            return node;
+        }
+
+        // Update node height
+        node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+
         return node;
     }
-    
-    TreeNode* search(TreeNode* node, string key) {
-        if (!node || node->key == key) return node;
-        if (key < node->key) return search(node->left, key);
+
+    // Search for a word in the dictionary
+    Node *search(Node *node, string key)
+    {
+        if (node == nullptr || node->key == key)
+            return node;
+        if (key < node->key)
+            return search(node->left, key);
         return search(node->right, key);
     }
-    
-    TreeNode* findMin(TreeNode* node) {
-        while (node->left) node = node->left;
+
+    // Find the node with the minimum value (used for deletion)
+    Node *minValueNode(Node *node)
+    {
+        while (node->left != nullptr)
+            node = node->left;
         return node;
     }
-    
-    TreeNode* deleteNode(TreeNode* node, string key) {
-        if (!node) return node;
-        if (key < node->key) node->left = deleteNode(node->left, key);
-        else if (key > node->key) node->right = deleteNode(node->right, key);
-        else {
-            if (!node->left) return node->right;
-            if (!node->right) return node->left;
-            TreeNode* temp = findMin(node->right);
+
+    // Delete a word from the dictionary
+    Node *deleteNode(Node *node, string key)
+    {
+        if (node == nullptr)
+            return node;
+
+        if (key < node->key)
+            node->left = deleteNode(node->left, key);
+        else if (key > node->key)
+            node->right = deleteNode(node->right, key);
+        else
+        {
+            // Node with one or no child
+            if (node->left == nullptr)
+            {
+                Node *temp = node->right;
+                delete node;
+                return temp;
+            }
+            else if (node->right == nullptr)
+            {
+                Node *temp = node->left;
+                delete node;
+                return temp;
+            }
+            // Node with two children: Get inorder successor
+            Node *temp = minValueNode(node->right);
             node->key = temp->key;
             node->value = temp->value;
             node->right = deleteNode(node->right, temp->key);
         }
+
+        // Update node height
+        node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+
         return node;
     }
-    
-    void inorder(TreeNode* node) {
-        if (node) {
-            inorder(node->left);
-            cout << node->key << ": " << node->value << endl;
-            inorder(node->right);
-        }
+
+    // Inorder traversal for displaying dictionary
+    void inorder(Node *node)
+    {
+        if (node == nullptr)
+            return;
+        inorder(node->left);
+        cout << node->key << " : " << node->value << endl;
+        inorder(node->right);
     }
-    
-    TreeNode* mirror(TreeNode* node) {
-        if (node) {
-            swap(node->left, node->right);
-            mirror(node->left);
-            mirror(node->right);
-        }
-        return node;
+
+    // Mirror the BST (swap left and right)
+    Node *mirror(Node *node)
+    {
+        if (node == nullptr)
+            return nullptr;
+        Node *temp = new Node(node->key, node->value);
+        temp->left = mirror(node->right);
+        temp->right = mirror(node->left);
+        return temp;
     }
-    
-    TreeNode* copy(TreeNode* node) {
-        if (!node) return nullptr;
-        TreeNode* newNode = new TreeNode(node->key, node->value);
+
+    // Copy the BST
+    Node *copy(Node *node)
+    {
+        if (node == nullptr)
+            return nullptr;
+        Node *newNode = new Node(node->key, node->value);
         newNode->left = copy(node->left);
         newNode->right = copy(node->right);
         return newNode;
     }
-    
-    void levelOrder(TreeNode* node) {
-        if (!node) return;
-        queue<TreeNode*> q;
-        q.push(node);
-        while (!q.empty()) {
-            int size = q.size();
-            for (int i = 0; i < size; i++) {
-                TreeNode* temp = q.front(); q.pop();
-                cout << temp->key << ": " << temp->value << " | ";
-                if (temp->left) q.push(temp->left);
-                if (temp->right) q.push(temp->right);
-            }
-            cout << endl;
+
+    // Print nodes at a given level (used in level-wise traversal)
+    void printLevel(Node *node, int level)
+    {
+        if (node == nullptr)
+            return;
+        if (level == 1)
+            cout << node->key << " : " << node->value << endl;
+        else
+        {
+            printLevel(node->left, level - 1);
+            printLevel(node->right, level - 1);
         }
     }
-    
+
+    // Level-order traversal without queue
+    void levelOrderTraversal(Node *node)
+    {
+        int h = getHeight(node);
+        for (int i = 1; i <= h; i++)
+        {
+            printLevel(node, i);
+        }
+    }
+
 public:
-    DictionaryBST() : root(nullptr) {}
-    
-    void insert(string key, string value) { root = insert(root, key, value); }
-    
-    string search(string key) {
-        TreeNode* res = search(root, key);
-        return res ? res->value : "Not Found";
+    Dictionary() { root = nullptr; }
+
+    void insertWord(string key, string value)
+    {
+        root = insert(root, key, value);
+        cout << "Word inserted successfully.\n";
     }
-    
-    void deleteKey(string key) { root = deleteNode(root, key); }
-    
-    void display() { inorder(root); }
-    
-    void mirrorImage() { root = mirror(root); }
-    
-    DictionaryBST copyDictionary() {
-        DictionaryBST newDict;
-        newDict.root = copy(root);
-        return newDict;
+
+    void deleteWord(string key)
+    {
+        if (search(root, key) == nullptr)
+        {
+            cout << "Word not found! Cannot delete.\n";
+            return;
+        }
+        root = deleteNode(root, key);
+        cout << "Word deleted successfully.\n";
     }
-    
-    void levelOrderDisplay() { levelOrder(root); }
+
+    void searchWord(string key)
+    {
+        Node *result = search(root, key);
+        if (result != nullptr)
+            cout << "Word Found! " << result->key << " : " << result->value << endl;
+        else
+            cout << "Word Not Found!\n";
+    }
+
+    void displayDictionary()
+    {
+        if (root == nullptr)
+        {
+            cout << "Dictionary is empty." << endl;
+            return;
+        }
+        cout << "\nDictionary (Sorted Order):\n";
+        inorder(root);
+    }
+
+    void displayMirrorDictionary()
+    {
+        if (root == nullptr)
+        {
+            cout << "Dictionary is empty." << endl;
+            return;
+        }
+        Node *mirroredRoot = mirror(root);
+        cout << "\nMirror Image of Dictionary:\n";
+        inorder(mirroredRoot);
+    }
+
+    void createCopyDictionary()
+    {
+        if (root == nullptr)
+        {
+            cout << "Dictionary is empty. Can't show a copy of the dictionary." << endl;
+            return;
+        }
+        Node *copiedRoot = copy(root);
+        cout << "\nCopy of Dictionary:\n";
+        inorder(copiedRoot);
+    }
+
+    void displayLevelWise()
+    {
+        if (root == nullptr)
+        {
+            cout << "Dictionary is empty. Can't Show Level-wise Dictionary." << endl;
+            return;
+        }
+        cout << "\nDictionary (Level Wise):\n";
+        levelOrderTraversal(root);
+    }
 };
 
-int main() {
-    DictionaryBST dict;
-    dict.insert("apple", "A fruit");
-    dict.insert("banana", "A yellow fruit");
-    dict.insert("cherry", "A red fruit");
-    
-    cout << "Inorder Traversal:" << endl;
-    dict.display();
-    
-    cout << "Search 'banana': " << dict.search("banana") << endl;
-    
-    dict.deleteKey("banana");
-    cout << "After deletion, Inorder Traversal:" << endl;
-    dict.display();
-    
-    dict.mirrorImage();
-    cout << "Mirror Inorder Traversal:" << endl;
-    dict.display();
-    
-    cout << "Level Order Traversal:" << endl;
-    dict.levelOrderDisplay();
-    
+// Main function with menu-driven program
+int main()
+{
+    Dictionary dict;
+    int choice;
+    string word, meaning;
+
+    do
+    {
+        cout << "\nMenu:\n";
+        cout << "1. Insert Word\n";
+        cout << "2. Delete Word\n";
+        cout << "3. Search Word\n";
+        cout << "4. Display Dictionary\n";
+        cout << "5. Mirror Image of Dictionary\n";
+        cout << "6. Create a Copy of Dictionary\n";
+        cout << "7. Display Dictionary Level-wise\n";
+        cout << "8. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter Word: ";
+            cin >> word;
+            cout << "Enter Meaning: ";
+            cin.ignore();
+            getline(cin, meaning);
+            dict.insertWord(word, meaning);
+            break;
+
+        case 2:
+            cout << "Enter Word to Delete: ";
+            cin >> word;
+            dict.deleteWord(word);
+            break;
+
+        case 3:
+            cout << "Enter Word to Search: ";
+            cin >> word;
+            dict.searchWord(word);
+            break;
+
+        case 4:
+            dict.displayDictionary();
+            break;
+
+        case 5:
+            dict.displayMirrorDictionary();
+            break;
+
+        case 6:
+            dict.createCopyDictionary();
+            break;
+
+        case 7:
+            dict.displayLevelWise();
+            break;
+
+        case 8:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice! Try again.\n";
+        }
+    } while (choice != 8);
+
     return 0;
 }
