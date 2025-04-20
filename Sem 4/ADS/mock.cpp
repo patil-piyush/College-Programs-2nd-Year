@@ -35,7 +35,7 @@ void Generate_and_Insert(int n)
     int num;
     for (int i = 0; i <= n; i++)
     {
-        srand(time(0));
+        // srand(time(0));
         num = rand() % 100 + 1;
         if (i == 0)
         {
