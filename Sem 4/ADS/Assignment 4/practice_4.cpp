@@ -1,30 +1,37 @@
-#include<iostream>
-#include<vector>
+#include <iostream>
+#include <vector>
 #include <climits>
 using namespace std;
 
 #define V 5
 #define INF INT_MAX
 
-class PrimMst{
-    private:
+class prim
+{
+private:
     int graph[V][V];
-    vector<string> DepartmentNames;
+    vector<string> dnames;
 
-    public:
-    PrimMst(int inputGraph[V][V], vector<string> names){
-        for(int i=0; i<V; i++){
-            for(int j=0; j<V; j++){
-                graph[i][j] = inputGraph[i][j];
+public:
+    prim(int input[V][V], vector<string> names)
+    {
+        dnames = names;
+        for (int i = 0; i < V; i++)
+        {
+            for (int j = 0; j < V; j++)
+            {
+                graph[i][j] = input[i][j];
             }
         }
-        DepartmentNames = names;
     }
 
-    int findMinKey(vector<int> &key, vector<bool> &inMST){
+    int findMinDistance(vector<int> &key, vector<bool> inMST)
+    {
         int minValue = INF, minIndex = -1;
-        for(int i=0; i<V; i++){
-            if(!inMST[i] && key[i]<minValue){
+        for (int i = 0; i < V; i++)
+        {
+            if (!inMST[i] && key[i] < minValue)
+            {
                 minValue = key[i];
                 minIndex = i;
             }
@@ -32,55 +39,57 @@ class PrimMst{
         return minIndex;
     }
 
-    void findMST(){
-        vector<int> parent(V, -1);
-        vector<int> key(V, INF);
+    void findPath()
+    {
         vector<bool> inMST(V, false);
+        vector<int> key(V, INF);
+        vector<int> parent(V, -1);
+        key[0] = 0;
 
-        key[0]=0;
-        
-        for(int count = 0; count<V; count++){
-            
-            int u = findMinKey(key, inMST);
+        for (int count = 0; count < V; count++)
+        {
+            int u = findMinDistance(key, inMST);
             inMST[u] = true;
-            
 
-            for(int v=0; v<V; v++){
-                if(graph[u][v] != 0 && !inMST[v] && graph[u][v]<key[v]){
+            for (int v = 0; v < V; v++)
+            {
+                if (!inMST[v] && graph[u][v] && graph[u][v] < key[v])
+                {
                     key[v] = graph[u][v];
                     parent[v] = u;
                 }
             }
+
+            // Print MST with department names
+            cout << "Minimum Spanning Tree (MST) of College Campus:\n";
+            int totalDistance = 0;
+            for (int i = 1; i < V; i++)
+            {
+                cout << dnames[parent[i]] << " - " << dnames[i]
+                     << "  Distance: " << graph[parent[i]][i] << " meters\n";
+                totalDistance += graph[parent[i]][i];
+            }
+            cout << "Total Minimum Distance to Connect All Departments: " << totalDistance << " meters\n";
         }
-
-
-
-        //printing the mst
-        int total =0;
-        for(int i=1; i<V; i++){
-            cout << DepartmentNames[parent[i]] << " - " << DepartmentNames[i]
-                 << "  Distance: " << graph[parent[i]][i] << " meters\n";
-            total += graph[parent[i]][i];
-        }
-        cout<<"total distance - "<<total;
-
-
     }
 };
 
-int main(){
-    int inputGraph[V][V] = {
-        {0, 70, 90, 0, 0},   // ENTC
-        {30, 0, 35, 40, 0},  // AIML
-        {70, 50, 0, 47, 85}, // CS
-        {0, 89, 55, 0, 23},  // IT
-        {0, 0, 67, 34, 0}    // MECH
-    };
+    int main()
+    {
+        // Given adjacency matrix (distances between departments)
+        int inputGraph[V][V] = {
+            {0, 70, 90, 0, 0},   // ENTC
+            {30, 0, 35, 40, 0},  // AIML
+            {70, 50, 0, 47, 85}, // CS
+            {0, 89, 55, 0, 23},  // IT
+            {0, 0, 67, 34, 0}    // MECH
+        };
 
-    vector<string> names = {"ENTC", "AIML","CS", "IT", "MECH"};
+        // Department names corresponding to indices
+        vector<string> departmentNames = {"ENTC", "AIML", "CS", "IT", "MECH"};
 
-    PrimMst g(inputGraph, names);
-    g.findMST();
+        prim campus(inputGraph, departmentNames);
+        campus.findPath();
 
-    return 0;
-}
+        return 0;
+    }
