@@ -88,7 +88,7 @@ private:
                     rightRotate(z->parent->parent);
                 }
             }
-            else
+            else  
             {
                 Directory *y = z->parent->parent->left;
                 if (y->color == RED)
@@ -123,12 +123,14 @@ private:
             inorder(node->right);
         }
     }
-    Directory *minValueNode(Directory *node)
+    
+    Directory * minValueNode(Directory *node)
     {
         while (node->left != NIL)
             node = node->left;
         return node;
     }
+
     Directory *deleteNode(Directory *root, string name)
     {
         if (root == NIL)

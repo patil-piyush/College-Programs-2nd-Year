@@ -2,34 +2,40 @@
 #include <string>
 using namespace std;
 
-enum Color { RED, BLACK };
+enum Color
+{
+    RED,
+    BLACK
+};
 
-struct Directory {
+class directory
+{
+public:
     string name;
-    Directory* left;
-    Directory* right;
-    Directory* parent;
+    directory *left, *right, *parent;
     Color color;
-
-    Directory(string n = "") {
-        name = n;
+    directory(string a)
+    {
+        name = a;
         left = right = parent = NULL;
         color = RED;
     }
 };
 
-class DirectoryTree {
+class fileSystem
+{
 private:
-    Directory* root;
-    Directory* NIL;
+    directory *root;
+    directory *Nil;
 
-    void rotateLeft(Directory* x) {
-        Directory* y = x->right;
+    void leftRotation(directory *x)
+    {
+        directory *y = x->right;
         x->right = y->left;
-        if (y->left != NIL)
+        if (y->left != Nil)
             y->left->parent = x;
         y->parent = x->parent;
-        if (x->parent == NIL)
+        if (x->parent == NULL)
             root = y;
         else if (x == x->parent->left)
             x->parent->left = y;
@@ -39,253 +45,212 @@ private:
         x->parent = y;
     }
 
-    void rotateRight(Directory* x) {
-        Directory* y = x->left;
+    void rightRotation(directory *x)
+    {
+        directory *y = x->left;
         x->left = y->right;
-        if (y->right != NIL)
+        if (y->right != Nil)
             y->right->parent = x;
         y->parent = x->parent;
-        if (x->parent == NIL)
+        if (x->parent == NULL)
             root = y;
-        else if (x == x->parent->right)
-            x->parent->right = y;
-        else
+        else if (x == x->parent->left)
             x->parent->left = y;
+        else
+            x->parent->right = y;
         y->right = x;
         x->parent = y;
     }
 
-    void fixInsert(Directory* z) {
-        while (z->parent->color == RED) {
-            Directory* gp = z->parent->parent;
-            if (z->parent == gp->left) {
-                Directory* y = gp->right;
-                //uncle exits with red color
-                if (y->color == RED) {
+    void InsertFix(directory *z)
+    {
+        while (z->parent && z->parent->color == RED)
+        {
+            if (z->parent == z->parent->parent->left)
+            {
+                directory *y = z->parent->parent->right;
+                if (y->color == RED)
+                {
                     z->parent->color = BLACK;
+                    z->parent->parent->color = RED;
                     y->color = BLACK;
-                    gp->color = RED;
-                    z = gp;
-                } else {
-                    if (z == z->parent->right) {    // rotations
-                        z = z->parent;
-                        rotateLeft(z);
-                    }
-                    z->parent->color = BLACK;
-                    gp->color = RED;
-                    rotateRight(gp);
+                    z = z->parent->parent;
                 }
-            } else {                               //reverse
-                Directory* y = gp->left;
-                if (y->color == RED) {
-                    z->parent->color = BLACK;
-                    y->color = BLACK;
-                    gp->color = RED;
-                    z = gp;
-                } else {
-                    if (z == z->parent->left) {
+                else
+                {
+                    if (z == z->parent->right)
+                    {
                         z = z->parent;
-                        rotateRight(z);
+                        leftRotation(z);
                     }
                     z->parent->color = BLACK;
-                    gp->color = RED;
-                    rotateLeft(gp);
+                    z->parent->parent->color = RED;
+                    rightRotation(z->parent->parent);
+                }
+            }
+            else
+            {
+                directory *y = z->parent->parent->left;
+                if (y->color == RED)
+                {
+                    z->parent->color = BLACK;
+                    z->parent->parent->color = RED;
+                    y->color = BLACK;
+                    z = z->parent->parent;
+                }
+                else
+                {
+                    if (z == z->parent->left)
+                    {
+                        z = z->parent;
+                        rightRotation(z);
+                    }
+                    z->parent->color = BLACK;
+                    z->parent->parent->color = RED;
+                    leftRotation(z->parent->parent);
                 }
             }
         }
         root->color = BLACK;
     }
 
-    void inorder(Directory* node) {
-        if (node != NIL) {
-            inorder(node->left);
-            cout << node->name << " (" << (node->color == RED ? "RED" : "BLACK") << ")\n";
-            inorder(node->right);
+    void Inorder(directory *root)
+    {
+        if (root != Nil)
+        {
+            Inorder(root->left);
+            cout << "Name: " << root->name << "\tcolor: " << root->color << endl;
+            Inorder(root->right);
         }
     }
 
-    Directory* search(Directory* node, string name) {
-        if (node == NIL || name == node->name)
-            return node;
-        if (name < node->name)
-            return search(node->left, name);
-        return search(node->right, name);
+    directory *succ(directory *p)
+    {
+        if (p && p->left)
+        {
+            p = p->left;
+        }
+        return p;
     }
 
-    Directory* minimum(Directory* node) {
-        while (node->left != NIL)
-            node = node->left;
-        return node;
-    }
-
-    void transplant(Directory* u, Directory* v) {
-        if (u->parent == NIL)
-            root = v;
-        else if (u == u->parent->left)
-            u->parent->left = v;
+    directory *deleteDirectory(directory *root, string a)
+    {
+        if (root == Nil)
+            return Nil;
+        if (a < root->name)
+        {
+            root->left = deleteDirectory(root->left, a);
+        }
+        else if (a > root->name)
+        {
+            root->right = deleteDirectory(root->right, a);
+        }
         else
-            u->parent->right = v;
-        v->parent = u->parent;
-    }
-
-    void fixDelete(Directory* x) {
-        while (x != root && x->color == BLACK) {
-            if (x == x->parent->left) {
-                Directory* w = x->parent->right;
-                if (w->color == RED) {
-                    w->color = BLACK;
-                    x->parent->color = RED;
-                    rotateLeft(x->parent);
-                    w = x->parent->right;
-                }
-                if (w->left->color == BLACK && w->right->color == BLACK) {
-                    w->color = RED;
-                    x = x->parent;
-                } else {
-                    if (w->right->color == BLACK) {
-                        w->left->color = BLACK;
-                        w->color = RED;
-                        rotateRight(w);
-                        w = x->parent->right;
-                    }
-                    w->color = x->parent->color;
-                    x->parent->color = BLACK;
-                    w->right->color = BLACK;
-                    rotateLeft(x->parent);
-                    x = root;
-                }
-            } else {
-                Directory* w = x->parent->left;
-                if (w->color == RED) {
-                    w->color = BLACK;
-                    x->parent->color = RED;
-                    rotateRight(x->parent);
-                    w = x->parent->left;
-                }
-                if (w->right->color == BLACK && w->left->color == BLACK) {
-                    w->color = RED;
-                    x = x->parent;
-                } else {
-                    if (w->left->color == BLACK) {
-                        w->right->color = BLACK;
-                        w->color = RED;
-                        rotateLeft(w);
-                        w = x->parent->left;
-                    }
-                    w->color = x->parent->color;
-                    x->parent->color = BLACK;
-                    w->left->color = BLACK;
-                    rotateRight(x->parent);
-                    x = root;
-                }
+        {
+            if (root->left == Nil && root->right == Nil)
+            {
+                delete root;
+                return Nil;
+            }
+            else if (root->left == Nil || root->right == Nil)
+            {
+                directory *child = (root->left != Nil) ? root->left : root->right;
+                delete root;
+                return child;
+            }
+            else
+            {
+                directory *p = succ(root->right);
+                root->name = p->name;
+                root->right = deleteDirectory(root->right, p->name);
             }
         }
-        x->color = BLACK;
+        return root;
     }
 
 public:
-    DirectoryTree() {
-        NIL = new Directory();
-        NIL->left = NIL->right = NIL->parent = NIL;
-        NIL->color = BLACK;
-        root = NIL;
+    fileSystem()
+    {
+        Nil = new directory("Nil");
+        Nil->color = BLACK;
+        root = Nil;
     }
-
-    void insertDirectory(string name) {
-        Directory* z = new Directory(name);
-        z->left = z->right = z->parent = NIL;
-        Directory* y = NIL;
-        Directory* x = root;
-        while (x != NIL) {
+    void Insert(string a)
+    {
+        directory *nn = new directory(a);
+        nn->right = nn->left = Nil;
+        directory *y = NULL;
+        directory *x = root;
+        while (x != Nil)
+        {
             y = x;
-            if (z->name < x->name)
+            if (a < x->name)
                 x = x->left;
             else
                 x = x->right;
         }
-        z->parent = y;
-        if (y == NIL)
-            root = z;
-        else if (z->name < y->name)
-            y->left = z;
+        nn->parent = y;
+        if (y == NULL)
+            root = nn;
+        else if (nn->name < y->name)
+            y->left = nn;
         else
-            y->right = z;
-        z->color = RED;
-        fixInsert(z);
+            y->right = nn;
+        nn->color = RED;
+        InsertFix(nn);
     }
 
-    void deleteDirectory(string name) {
-        Directory* z = search(root, name);
-        if (z == NIL) {
-            cout << "Directory not found.\n";
-            return;
-        }
-
-        Directory* y = z;
-        Directory* x;
-        Color yOriginalColor = y->color;
-
-        if (z->left == NIL) {
-            x = z->right;
-            transplant(z, z->right);
-        } else if (z->right == NIL) {
-            x = z->left;
-            transplant(z, z->left);
-        } else {
-            y = minimum(z->right);
-            yOriginalColor = y->color;
-            x = y->right;
-            if (y->parent == z) {
-                x->parent = y;
-            } else {
-                transplant(y, y->right);
-                y->right = z->right;
-                y->right->parent = y;
-            }
-            transplant(z, y);
-            y->left = z->left;
-            y->left->parent = y;
-            y->color = z->color;
-        }
-        delete z;
-        if (yOriginalColor == BLACK)
-            fixDelete(x);
+    void Display()
+    {
+        cout << "The file system contains following directories: \n";
+        Inorder(root);
     }
 
-    void displayDirectories() {
-        inorder(root);
+    void Remove(string a)
+    {
+        root = deleteDirectory(root, a);
+        if (root)
+            cout << "directory deleted successfully!\n";
+        else
+            cout << "directory not found!";
     }
 };
 
-int main() {
-    DirectoryTree dt;
+int main()
+{
+    fileSystem fs;
     int choice;
     string name;
-
-    while (true) {
-        cout << "\n1. Insert Directory\n2. Delete Directory\n3. Display Directory Tree\n4. Exit\nEnter your choice: ";
+    do
+    {
+        cout << "\nFile System Menu\n";
+        cout << "1. Insert Directory\n";
+        cout << "2. Delete Directory\n";
+        cout << "3. Display File System\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
         cin >> choice;
-        cin.ignore(); // To ignore newline from previous input
-
-        switch (choice) {
-            case 1:
-                cout << "Enter directory name to insert: ";
-                getline(cin, name);
-                dt.insertDirectory(name);
-                break;
-            case 2:
-                cout << "Enter directory name to delete: ";
-                getline(cin, name);
-                dt.deleteDirectory(name);
-                break;
-            case 3:
-                cout << "Directory Tree:\n";
-                dt.displayDirectories();
-                break;
-            case 4:
-                return 0;
-            default:
-                cout << "Invalid choice!\n";
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter directory name: ";
+            cin >> name;
+            fs.Insert(name);
+            break;
+        case 2:
+            cout << "Enter directory name to delete: ";
+            cin >> name;
+            fs.Remove(name);
+            break;
+        case 3:
+            fs.Display();
+            break;
+        case 4:
+            cout << "Exiting...\n";
+            break;
+        default:
+            cout << "Invalid choice, try again!\n";
         }
-    }
+    } while (choice != 4);
+    return 0;
 }
